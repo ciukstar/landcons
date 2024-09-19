@@ -1,0 +1,64 @@
+
+
+$maybe (Entity _ (Webpage _ _ footer),(header,body)) <- page
+  $maybe Entity _ (DocHeader _ typ html level) <- header 
+    $case typ
+      $of ContentsTypeHtml
+        $maybe html <- html
+          ^{html}
+      $of ContentsTypeText
+        $maybe l <- level
+          $case l
+            $of HeadingLevelH1
+              <header.responsive>
+                <h1>
+                  $maybe html <- html
+                    ^{html}
+            $of HeadingLevelH2
+              <header.responsive>
+                <h2>
+                  $maybe html <- html
+                    ^{html}
+            $of HeadingLevelH3
+              <header.responsive>
+                <h3>
+                  $maybe html <- html
+                    ^{html}
+            $of HeadingLevelH4
+              <header.responsive>
+                <h4>
+                  $maybe html <- html
+                    ^{html}
+            $of HeadingLevelH5
+              <header.responsive>
+                <h5>
+                  $maybe html <- html
+                    ^{html}
+            $of HeadingLevelH6
+              <header.responsive>
+                <h6>
+                  $maybe html <- html
+                    ^{html}
+                  
+  $maybe Entity _ (DocBody _ bg layout) <- body
+    <main.responsive :isJust bg:style=background-color:#{fromMaybe "inherit" bg}>
+      $forall (Entity pid (Product _ _),Entity iid (Item name _ price currency rating link)) <- products
+        <a.row.padding.surface-container.wave :isJust link:href=#{fromMaybe "#" link} target=_blank
+          style="background-color:transparent !important">
+
+          <img.circle.extra src=@{DataR $ ItemPhotoR iid} alt=_{MsgPhoto}>
+
+          <div.max>
+            <h6.small>#{name}
+            <div.currency data-value=#{price} data-currency=#{currency}>
+              #{price} #{currency}
+            <div>
+              $maybe r <- rating
+                #{T.replicate r "☆"}
+  
+          $maybe link <- link
+            <i>arrow_forward_ios
+
+        <hr>
+  
+  <p>#{footer}

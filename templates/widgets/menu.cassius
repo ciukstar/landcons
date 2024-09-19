@@ -1,0 +1,8 @@
+
+dialog
+    header
+        nav
+            flex: 1
+            
+            ##{idButtonMainMenuClose}
+                margin-left: auto

@@ -1,0 +1,20 @@
+
+^{widgetMainMenu idOverlay idDialogMainMenu}
+
+<header.responsive.transparent>
+
+  <div.header-center>
+    ^{widgetTheme}
+
+    ^{widgetLang LangR (rndr HomeR [])}
+        
+
+  ^{widgetMainMenuTrigger idOverlay idDialogMainMenu}
+
+<main>
+
+  <article.round.border ##{idArticleSensorMap}>
+    
+    <div ##{idSensorMap} style="height:300px">
+
+  <article.round.border>

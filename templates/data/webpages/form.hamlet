@@ -1,0 +1,11 @@
+
+#{extra} 
+
+$forall v <- [titleV,footerV]
+  <div.field.label.border.round :isJust (fvErrors v):.invalid>
+
+    ^{fvInput v}
+    <label>#{fvLabel v}
+
+    $maybe err <- fvErrors v
+      <span.error>#{err}

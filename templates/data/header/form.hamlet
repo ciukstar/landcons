@@ -1,0 +1,32 @@
+
+#{extra}
+
+<div.field.label.suffix.border.round :isJust (fvErrors typeV):.invalid>
+  ^{fvInput typeV}
+  <label>
+    #{fvLabel typeV}
+    $if fvRequired typeV
+      <sup>*
+  <i>arrow_drop_down
+  $maybe err <- fvErrors typeV
+    <span.error>#{err}
+
+<div.field.border.round.label.textarea :isJust (fvErrors htmlV):.invalid>
+  ^{fvInput htmlV}
+  <label>
+    #{fvLabel htmlV}
+    $if fvRequired htmlV
+      <sup>*
+  $maybe err <- fvErrors htmlV
+    <span.error>#{err}
+
+<div.field.label.suffix.border.round :isJust (fvErrors levelV):.invalid>
+  ^{fvInput levelV}
+  <label>
+    #{fvLabel levelV}
+    $if fvRequired levelV
+      <sup>*
+  <i>arrow_drop_down
+  $maybe err <- fvErrors levelV
+    <span.error>#{err}
+

@@ -1,0 +1,26 @@
+
+^{widgetTopbar (Just $ DataR SitesR) (msgr MsgSite) idOverlay Nothing Nothing Nothing}
+
+<main.responsive>
+
+  <div.tabs>
+    <a href=@{DataR $ SiteR sid}>_{MsgDetails}
+    <a.active href=@{DataR $ WebpagesR sid}>_{MsgPages}
+
+  <div.page.padding.active>
+
+    $forall Entity pid (Webpage _ title _) <- webpages
+      <a.row.padding.surface-container.wave href=@{DataR $ WebpageR sid pid}>
+        <button.circle>
+        <div.max>
+          <h6.small>#{title}
+        <i>arrow_forward_ios
+
+      <hr>
+
+  <a.button.circle.extra.fixed.right.bottom.margin.medium-elevate href=@{DataR $ WebpageNewR sid}
+    style="z-index:1"
+    onclick="event.stopPropagation()">
+    <i>add
+
+  ^{widgetSnackbar msgs}

@@ -1,0 +1,37 @@
+
+#{extra} 
+
+$forall v <- [nameV]
+  <div.field.label.border.round :isJust (fvErrors v):.invalid>
+
+    ^{fvInput v}
+    <label>
+      #{fvLabel v}
+      $if fvRequired v
+        <sup>*
+
+    $maybe err <- fvErrors v
+      <span.error>#{err}
+      
+$forall v <- [descrV]
+  <div.field.textarea.label.border.round :isJust (fvErrors v):.invalid>
+
+    ^{fvInput v}
+    <label>
+      #{fvLabel v}
+      $if fvRequired v
+        <sup>*
+
+    $maybe err <- fvErrors v
+      <span.error>#{err}
+
+
+<div.field.label.suffix.border.round :isJust (fvErrors homeV):.invalid>
+  ^{fvInput homeV}
+  <label>
+    #{fvLabel homeV}
+    $if fvRequired homeV
+      <sup>*
+  <i>arrow_drop_down
+  $maybe err <- fvErrors homeV
+    <span.error>#{err}
