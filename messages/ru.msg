@@ -1,3 +1,13 @@
+Favicon: Фавикон
+Copy: Копировать
+Settings: Настройки
+Color: Цвет
+Country: Страна
+CountryRU: Россия
+CountryUS: США
+Language: Язык
+LangRu: Русский
+LangEn: Английский
 EmptyPage: Пустая страница
 NumberOfPages: кол. страниц
 Create: Создать

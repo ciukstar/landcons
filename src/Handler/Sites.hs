@@ -7,30 +7,38 @@ module Handler.Sites
   ( getSitesR, postSitesR
   , getSiteR, postSiteR
   , getSiteNewR, getSiteEditR, postSiteDeleR
+  , getSiteFaviconR
   ) where
 
+import Control.Monad (void)
+
 import Data.Maybe (isJust)
+import Data.Text.Encoding (encodeUtf8)
 
 import Database.Esqueleto.Experimental
     ( select, from, table, orderBy, asc, selectOne, where_, val
-    , (^.), (==.)
+    , (^.), (==.), (=.)
+    , Value (unValue), update, set
     )
 import Database.Persist
-    ( Entity (Entity), entityVal, insert_, replace, delete, SelectOpt (Asc)
-    , selectFirst
+    ( Entity (Entity), entityVal, replace, delete, entityKey
     )
-import qualified Database.Persist as P ((==.))
+import qualified Database.Persist as P
+    ( upsert, upsertBy, (=.))
 
 
 import Foundation
     ( Handler, Form, widgetTopbar, widgetSnackbar
-    , Route (DataR, SiteHomeR, PageR)
-    , DataR (SitesR, SiteR, SiteNewR, SiteEditR, SiteDeleR, WebpagesR)
+    , Route (DataR, SiteHomeR, FaviconR)
+    , DataR
+      ( SitesR, SiteR, SiteNewR, SiteDeleR, WebpagesR, SiteFaviconR
+      )
     , AppMessage
       ( MsgSites, MsgSite, MsgName, MsgDescription, MsgConfirmPlease
       , MsgDeleteAreYouSure, MsgCancel, MsgDele, MsgSave, MsgRecordAdded
-      , MsgRecordEdited, MsgInvalidFormData, MsgRecordDeleted, MsgDetails
-      , MsgPages, MsgPreview, MsgHomepage, MsgUrl
+      , MsgRecordEdited, MsgInvalidFormData, MsgRecordDeleted, MsgCopy
+      , MsgPages, MsgHomepage, MsgUrl, MsgCreate, MsgSettings, MsgFavicon
+      , MsgAttribution
       )
     )
 
@@ -38,7 +46,11 @@ import Model
     ( msgSuccess, msgError
     , SiteId, Site(Site, siteName, siteDescr, siteHome)
     , Webpage (Webpage)
-    , EntityField (SiteName, SiteId, WebpageSite, WebpageId)
+    , Favicon (Favicon), Unique (UniqueSite)
+    , EntityField
+      ( SiteName, SiteId, WebpageSite, WebpageId, FaviconSite, SiteHome
+      , FaviconAttribution, SiteDescr, FaviconMime, FaviconPhoto
+      )
     )
 
 import Settings (widgetFile)
@@ -46,16 +58,21 @@ import Settings (widgetFile)
 import Text.Hamlet (Html)
 import Text.Shakespeare.I18N (SomeMessage (SomeMessage))
 
-import Yesod.Core (Yesod(defaultLayout), getMessageRender, liftHandler)
+import Yesod.Core
+    ( Yesod(defaultLayout), getMessageRender, liftHandler, fileSourceByteString
+    , FileInfo (fileContentType), TypedContent (TypedContent)
+    , ToContent (toContent)
+    )
 import Yesod.Core.Handler
     (getMessages, newIdent, addMessageI, redirect)
 import Yesod.Core.Widget (whamlet)
-import Yesod.Form.Fields (textField, textareaField, selectField, optionsPairs)
+import Yesod.Form.Fields
+    ( textField, textareaField, selectField, optionsPairs, fileField, htmlField)
 import Yesod.Form.Functions (mreq, mopt, generateFormPost, runFormPost)
 import Yesod.Form.Types
     ( FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
     , FormResult (FormSuccess)
-    , fvInput, fvLabel, fvErrors, fvRequired
+    , fvInput, fvLabel, fvErrors, fvRequired, fvId
     )
 import Yesod.Persist.Core (runDB)
 
@@ -87,10 +104,28 @@ postSiteR sid = do
 
     ((fr,fw),et) <- runFormPost $ formSite site
     case fr of
-      FormSuccess r -> do
-          runDB $ replace sid r
+      FormSuccess (r,(Just fi,attrib)) -> do
+          void $ runDB $ replace sid r
+          bs <- fileSourceByteString fi
+          void $ runDB $ P.upsert (Favicon sid (fileContentType fi) bs attrib)
+              [ FaviconMime P.=. fileContentType fi
+              , FaviconPhoto P.=. bs
+              , FaviconAttribution P.=. attrib
+              ]
+                
           addMessageI msgSuccess MsgRecordEdited
           redirect $ DataR $ SiteR sid
+          
+      FormSuccess (r,(Nothing,attrib)) -> do
+          void $ runDB $ replace sid r
+          
+          runDB $ update $ \x -> do
+                set x [ FaviconAttribution =. val attrib ]
+                where_ $ x ^. FaviconSite ==. val sid
+                
+          addMessageI msgSuccess MsgRecordEdited
+          redirect $ DataR $ SiteR sid
+      
       _otherwise -> do
           msgr <- getMessageRender
           msgs <- getMessages
@@ -122,8 +157,28 @@ postSitesR = do
     ((fr,fw),et) <- runFormPost $ formSite Nothing
 
     case fr of
-      FormSuccess r -> do
-          runDB $ insert_ r
+      FormSuccess (r@(Site name descr home),(Just fi,attrib)) -> do
+          s <- runDB $ P.upsertBy (UniqueSite name) r
+              [ SiteName P.=. name, SiteDescr P.=. descr, SiteHome P.=. home]
+          
+          bs <- fileSourceByteString fi
+          void $ runDB $ P.upsert (Favicon (entityKey s) (fileContentType fi) bs attrib)
+              [ FaviconMime P.=. fileContentType fi
+              , FaviconPhoto P.=. bs
+              , FaviconAttribution P.=. attrib
+              ]
+                
+          addMessageI msgSuccess MsgRecordAdded
+          redirect $ DataR SitesR
+          
+      FormSuccess (r@(Site name descr home),(Nothing,attrib)) -> do
+          s <- runDB $ P.upsertBy (UniqueSite name) r
+              [ SiteName P.=. name, SiteDescr P.=. descr, SiteHome P.=. home]
+          
+          runDB $ update $ \x -> do
+                set x [ FaviconAttribution =. val attrib ]
+                where_ $ x ^. FaviconSite ==. val (entityKey s)
+                
           addMessageI msgSuccess MsgRecordAdded
           redirect $ DataR SitesR
       _otherwise -> do
@@ -131,6 +186,7 @@ postSitesR = do
           msgs <- getMessages
           defaultLayout $ do
               idOverlay <- newIdent
+              idForm <- newIdent
               $(widgetFile "data/sites/new")
 
 
@@ -144,10 +200,11 @@ getSiteNewR = do
     msgs <- getMessages
     defaultLayout $ do
         idOverlay <- newIdent
+        idForm <- newIdent
         $(widgetFile "data/sites/new")
 
 
-formSite :: Maybe (Entity Site) -> Form Site
+formSite :: Maybe (Entity Site) -> Form (Site,(Maybe FileInfo, Maybe Html))
 formSite site extra = do
 
     (nameR,nameV) <- mreq textField FieldSettings
@@ -175,7 +232,31 @@ formSite site extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
         } (siteHome . entityVal <$> site)
 
-    let r = Site <$> nameR <*> descrR <*> homeR
+    (faviconR,faviconV) <- mopt fileField FieldSettings
+        { fsLabel = SomeMessage MsgFavicon
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("style","display:none")]
+        } Nothing
+
+    attrib <- (unValue =<<) <$> case site of
+      Just (Entity sid _) -> liftHandler $ runDB $ selectOne $ do
+          x <- from $ table @Favicon
+          where_ $ x ^. FaviconSite ==. val sid
+          return $ x ^. FaviconAttribution
+      Nothing -> return Nothing
+
+    (attribR,attribV) <- mopt htmlField FieldSettings
+        { fsLabel = SomeMessage MsgAttribution
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = []
+        } (Just attrib)
+
+    let r = (,) <$> (Site <$> nameR <*> descrR <*> homeR)
+            <*> ((,) <$> faviconR <*> attribR)
+
+    idLabelPhoto <- newIdent
+    idFigurePhoto <- newIdent
+    idImgPhoto <- newIdent
     let w = $(widgetFile "data/sites/form")
     return (r,w)
 
@@ -189,14 +270,16 @@ getSiteR sid = do
         where_ $ x ^. SiteId ==. val sid
         return x
 
-    page <- runDB $ selectFirst [WebpageSite P.==. sid] [Asc WebpageId]
-
     (fw0,et0) <- generateFormPost formSiteDelete
+    (fw,et) <- generateFormPost $ formSite site
 
     msgr <- getMessageRender
     msgs <- getMessages
     defaultLayout $ do
         idOverlay <- newIdent
+        idSiteUrl <- newIdent
+        idButtonCopySiteUrl <- newIdent
+        idForm <- newIdent
         idDialogDelete <- newIdent
         $(widgetFile "data/sites/site")
     
@@ -214,3 +297,14 @@ getSitesR = do
     defaultLayout $ do
         idOverlay <- newIdent
         $(widgetFile "data/sites/sites")
+
+        
+getSiteFaviconR :: SiteId -> Handler TypedContent
+getSiteFaviconR sid = do
+    photo <- runDB $ selectOne $ do
+        x <- from $ table @Favicon
+        where_ $ x ^. FaviconSite ==. val sid
+        return x
+    case photo of
+      Just (Entity _ (Favicon _ mime bs _)) -> return $ TypedContent (encodeUtf8 mime) $ toContent bs
+      Nothing -> redirect FaviconR

@@ -39,6 +39,7 @@ import Prelude (Double)
 
 import Text.Hamlet (Html)
 import Text.Read (Read, readMaybe)
+import Text.Shakespeare.I18N (Lang)
 import Text.Show (Show, show)
 
 import Yesod.Core.Dispatch (PathMultiPiece, toPathMultiPiece, fromPathMultiPiece)

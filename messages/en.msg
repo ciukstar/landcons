@@ -1,3 +1,13 @@
+Favicon: Favicon
+Copy: Copy
+Settings: Settings
+Color: Color
+Country: Country
+CountryRU: RU
+CountryUS: US
+Language: Language
+LangRu: Russian
+LangEn: English
 EmptyPage: Empty page
 NumberOfPages: number of pages
 Create: Create

@@ -5,7 +5,7 @@
 
 <main.responsive>
   <div.tabs>
-    <a href=@{DataR $ WebpageR sid pid}>_{MsgDetails}
+    <a href=@{DataR $ WebpageR sid pid}>_{MsgSettings}
     <a.active href=@{DataR $ HeaderR sid pid}>_{MsgHeader}
     <a href=@{DataR $ BodyR sid pid}>_{MsgBody}
     <a href=#>_{MsgFooter}

@@ -5,7 +5,7 @@
 
 <main.responsive>
   <div.tabs>
-    <a href=@{DataR $ WebpageR sid pid}>_{MsgDetails}
+    <a href=@{DataR $ WebpageR sid pid}>_{MsgSettings}
     <a href=@{DataR $ HeaderR sid pid}>_{MsgHeader}
     <a.active href=@{DataR $ BodyR sid pid}>_{MsgBody}
     <a href=#>_{MsgFooter}
@@ -31,7 +31,7 @@
           <p>_{MsgNoProductsAssignedYet}.
           <p>_{MsgYouCanAddSomeFromProductList}.
     $else
-      $forall (Entity pid (Product _ _),Entity iid (Item name _ price currency rating link)) <- products
+      $forall (Entity _ (Product _ _),Entity iid (Item name _ price currency rating link)) <- products
         <a.row.padding.surface-container.wave :isJust link:href=#{fromMaybe "#" link} target=_blank>
 
           <img.circle.extra src=@{DataR $ ItemPhotoR iid} alt=_{MsgPhoto}>
@@ -44,7 +44,7 @@
               $maybe r <- rating
                 #{T.replicate r "☆"}
   
-          $maybe link <- link
+          $maybe _ <- link
             <i>arrow_forward_ios
 
         <hr>

@@ -4,7 +4,7 @@
 <main.responsive>
 
   <div.tabs>
-    <a href=@{DataR $ SiteR sid}>_{MsgDetails}
+    <a href=@{DataR $ SiteR sid}>_{MsgSettings}
     <a.active href=@{DataR $ WebpagesR sid}>_{MsgPages}
 
   <div.page.padding.active>

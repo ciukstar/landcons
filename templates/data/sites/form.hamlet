@@ -1,29 +1,59 @@
 
 #{extra} 
-
-$forall v <- [nameV]
-  <div.field.label.border.round :isJust (fvErrors v):.invalid>
-
-    ^{fvInput v}
-    <label>
-      #{fvLabel v}
-      $if fvRequired v
-        <sup>*
-
-    $maybe err <- fvErrors v
-      <span.error>#{err}
+  
+<label for=#{fvId faviconV} ##{idLabelPhoto}>
+  <figure.center-align ##{idFigurePhoto}>
+    $maybe Entity sid _ <- site
+      <img src=@{DataR $ SiteFaviconR sid} width=auto height=56 ##{idImgPhoto} loading=lazy alt=_{MsgFavicon}>
+    $nothing
+      <img src=@{FaviconR} width=auto height=56 ##{idImgPhoto} loading=lazy alt=_{MsgFavicon}>
       
-$forall v <- [descrV]
-  <div.field.textarea.label.border.round :isJust (fvErrors v):.invalid>
+    <figcaption>
 
-    ^{fvInput v}
-    <label>
-      #{fvLabel v}
-      $if fvRequired v
-        <sup>*
+      $maybe errs <- fvErrors faviconV
+        <div.error>
+          #{errs}
 
-    $maybe err <- fvErrors v
-      <span.error>#{err}
+      <button.border.round.transparent type=button onclick="document.getElementById('#{idLabelPhoto}').click()">
+        <i>upload_file
+        _{MsgFavicon}
+
+^{fvInput faviconV}
+
+<div.field.textarea.label.border.round :isJust (fvErrors attribV):.invalid>
+
+  ^{fvInput attribV}
+  <label>
+    #{fvLabel attribV}
+    $if fvRequired attribV
+      <sup>*
+
+  $maybe err <- fvErrors attribV
+    <span.error>#{err}
+
+    
+<div.field.label.border.round :isJust (fvErrors nameV):.invalid>
+
+  ^{fvInput nameV}
+  <label>
+    #{fvLabel nameV}
+    $if fvRequired nameV
+      <sup>*
+
+  $maybe err <- fvErrors nameV
+    <span.error>#{err}
+
+      
+<div.field.textarea.label.border.round :isJust (fvErrors descrV):.invalid>
+
+  ^{fvInput descrV}
+  <label>
+    #{fvLabel descrV}
+    $if fvRequired descrV
+      <sup>*
+
+  $maybe err <- fvErrors descrV
+    <span.error>#{err}
 
 
 <div.field.label.suffix.border.round :isJust (fvErrors homeV):.invalid>

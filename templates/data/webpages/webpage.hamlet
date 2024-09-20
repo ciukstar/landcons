@@ -1,25 +1,36 @@
 
 <div.overlay ##{idOverlay} data-ui=##{idOverlay} onclick="document.getElementById('#{idDialogDelete}').close()">
 
-^{widgetTopbar (Just $ DataR $ WebpagesR sid) (msgr MsgPage) idOverlay (Just idDialogDelete) (Just $ DataR $ WebpageEditR sid pid) (Just $ PageR sid pid)}
+^{widgetTopbar (Just $ DataR $ WebpagesR sid) (msgr MsgPage) idOverlay (Just idDialogDelete) Nothing (Just $ PageR sid pid)}
 
 <main.responsive>
 
   <div>
     <div.tabs>
-      <a.active href=@{DataR $ WebpageR sid pid}>_{MsgDetails}
+      <a.active href=@{DataR $ WebpageR sid pid}>_{MsgSettings}
       <a href=@{DataR $ HeaderR sid pid}>_{MsgHeader}
       <a href=@{DataR $ BodyR sid pid}>_{MsgBody}
       <a href=#>_{MsgFooter}
       
     <div.page.padding.active>
 
-      $maybe Entity _ (Webpage _ title _) <- webpage
-        <dl.margin>
-          <dt>
-            <label.large>_{MsgName}
-          <dd.margin>
-            #{title}
+      $maybe Entity pid _ <- webpage
+        <form.margin method=post action=@{DataR $ WebpageR sid pid} enctype=#{et} novalidate>
+          ^{fw}
+          <nav.right-align>
+            <a.button.transparent href=@{DataR $ WebpagesR sid}>
+              _{MsgCancel}
+            <button.primary type=submit>
+              _{MsgSave}
+        
+      $nothing
+        <form.margin method=post action=@{DataR $ WebpagesR sid} enctype=#{et} novalidate>
+          ^{fw}
+          <nav.right-align>
+            <a.button.transparent href=@{DataR $ WebpagesR sid}>
+              _{MsgCancel}
+            <button.primary type=submit>
+              _{MsgCreate}
 
       ^{widgetSnackbar msgs}
 

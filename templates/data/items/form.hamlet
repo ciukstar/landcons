@@ -11,7 +11,7 @@
     <figcaption>
 
       $maybe errs <- fvErrors photoV
-        <div.error style="color:var(--md-sys-color-error)">
+        <div.error>
           #{errs}
 
       <button.border.round.transparent type=button onclick="document.getElementById('#{idLabelPhoto}').click()">

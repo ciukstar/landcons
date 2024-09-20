@@ -19,19 +19,19 @@ import Database.Persist
     ( Entity (Entity), entityVal, insert_, replace, delete
     )
 
-
 import Foundation
     ( Handler, Form, widgetTopbar, widgetSnackbar
     , Route (DataR, PageR)
     , DataR
-      ( WebpagesR, WebpageR, WebpageNewR, WebpageEditR, WebpageDeleR
+      ( WebpagesR, WebpageR, WebpageNewR, WebpageDeleR
       , SiteR, SitesR, HeaderR, BodyR
       )
     , AppMessage
-      ( MsgPages, MsgPage, MsgName, MsgConfirmPlease
+      ( MsgPages, MsgPage, MsgConfirmPlease
       , MsgDeleteAreYouSure, MsgCancel, MsgDele, MsgSave, MsgRecordAdded
       , MsgRecordEdited, MsgInvalidFormData, MsgRecordDeleted, MsgTitle
-      , MsgHeader, MsgBody, MsgFooter, MsgDetails, MsgSite, MsgHeaders
+      , MsgHeader, MsgBody, MsgFooter, MsgDetails, MsgSite
+      , MsgCreate, MsgSettings, MsgBackgroundColor
       )
     )
 
@@ -39,8 +39,8 @@ import Model
     ( msgSuccess, msgError
     , SiteId
     , WebpageId
-    , Webpage (Webpage, webpageTitle, webpageFooter)
-    , EntityField (WebpageTitle, WebpageId)
+    , Webpage (Webpage, webpageTitle, webpageBgColor)
+    , EntityField (WebpageTitle, WebpageId, WebpageSite)
     )
 
 import Settings (widgetFile)
@@ -48,16 +48,16 @@ import Settings (widgetFile)
 import Text.Hamlet (Html)
 import Text.Shakespeare.I18N (SomeMessage (SomeMessage))
 
-import Yesod.Core (Yesod(defaultLayout), getMessageRender)
+import Yesod.Core (Yesod(defaultLayout), getMessageRender, setTitleI)
 import Yesod.Core.Handler (getMessages, newIdent, addMessageI, redirect)
 import Yesod.Persist.Core (runDB)
 import Yesod.Core.Widget (whamlet)
 import Yesod.Form.Fields (textField)
-import Yesod.Form.Functions (mreq, generateFormPost, runFormPost)
+import Yesod.Form.Functions (mreq, generateFormPost, runFormPost, mopt)
 import Yesod.Form.Types
     ( FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
     , FormResult (FormSuccess)
-    , fvInput, fvLabel, fvErrors
+    , fvInput, fvLabel, fvErrors, fvRequired
     )
 
 
@@ -156,12 +156,12 @@ formWebpage sid webpage extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
         } (webpageTitle . entityVal <$> webpage)
 
-    (footerR,footerV) <- mreq textField FieldSettings
-        { fsLabel = SomeMessage MsgFooter
+    (bgR,bgV) <- mopt textField FieldSettings
+        { fsLabel = SomeMessage MsgBackgroundColor
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
-        } (webpageFooter . entityVal <$> webpage)
+        } (webpageBgColor . entityVal <$> webpage)
 
-    let r = Webpage sid <$> titleR <*> footerR
+    let r = Webpage sid <$> titleR <*> bgR
     let w = $(widgetFile "data/webpages/form")
     return (r,w)
 
@@ -175,10 +175,12 @@ getWebpageR sid pid = do
         return x
 
     (fw0,et0) <- generateFormPost formWebpageDelete
+    (fw,et) <- generateFormPost $ formWebpage sid webpage
 
     msgr <- getMessageRender
     msgs <- getMessages
     defaultLayout $ do
+        setTitleI MsgPage
         idOverlay <- newIdent
         idDialogDelete <- newIdent
         $(widgetFile "data/webpages/webpage")
@@ -189,6 +191,7 @@ getWebpagesR sid = do
 
     webpages <- runDB $ select $ do
         x <- from $ table @Webpage
+        where_ $ x ^. WebpageSite ==. val sid
         orderBy [asc (x ^. WebpageTitle)]
         return x
 

@@ -16,13 +16,17 @@ import Model
     , Item (Item, itemName, itemDescr, itemPrice, itemCurrency, itemRating, itemLink)
     , ItemPhoto (ItemPhoto, itemPhotoItem, itemPhotoMime, itemPhotoPhoto, itemPhotoAttribution)
     , Site (Site, siteName, siteDescr, siteHome)
-    , Webpage (Webpage, webpageSite, webpageTitle, webpageFooter)
-    , DocHeader (DocHeader, docHeaderPage, docHeaderContentsType, docHeaderHtml, docHeaderLevel)
+    , Webpage (Webpage, webpageSite, webpageTitle, webpageBgColor)
+    , DocHeader
+      ( DocHeader, docHeaderPage, docHeaderContentsType, docHeaderContents, docHeaderLevel
+      , docHeaderLang, docHeaderCountry, docHeaderColor, docHeaderBgColor
+      )
     , DocBody (DocBody, docBodyPage, docBodyBgColor, docBodyLayout)
     , Product (Product, productItem, productDisplay)
     , ContentsType (ContentsTypeText)
     , HeadingLevel (HeadingLevelH1)
     , DisplayLayout (DisplayLayoutTable)
+    , Logo (Logo, logoHeader, logoPhoto, logoMime, logoAttribution)
     )
     
 import Text.Hamlet (shamlet)
@@ -106,14 +110,25 @@ fillDemoRu = do
 
     pid11 <- insert $ Webpage { webpageSite = sid1
                               , webpageTitle = "Продажи №1"
-                              , webpageFooter = "Нижний колонтитул 1"
+                              , webpageBgColor = Just "#0000ff"
                               }
 
     h111 <- insert $ DocHeader { docHeaderPage = pid11
                                , docHeaderContentsType = ContentsTypeText
-                               , docHeaderHtml = Just "Торговая площадка №1"
+                               , docHeaderContents = Just "Торговая площадка №1"
                                , docHeaderLevel = Just HeadingLevelH1
+                               , docHeaderLang = Just "ru"
+                               , docHeaderCountry = Just "RU"
+                               , docHeaderColor = Just "#ff0000"
+                               , docHeaderBgColor = Just "#FFEA00"
                                }
+
+    liftIO (BS.readFile "demo/local_convenience_store_24dp_013048_FILL0_wght400_GRAD0_opsz24.svg") >>= \bs ->
+        insert_ $ Logo { logoHeader = h111
+                       , logoPhoto = bs
+                       , logoMime = "image/svg+xml"
+                       , logoAttribution = Nothing
+                       }
 
     b111 <- insert $ DocBody { docBodyPage = pid11
                              , docBodyBgColor = Just "white"
@@ -131,7 +146,7 @@ fillDemoRu = do
 
     pid12 <- insert $ Webpage { webpageSite = sid1
                               , webpageTitle = "Продажи №2"
-                              , webpageFooter = "Нижний колонтитул 2"
+                              , webpageBgColor = Just "#00ff00"
                               }
 
     return ()

@@ -3,9 +3,9 @@
 
 <main.responsive>
 
-  <form.margin method=post action=@{DataR $ SitesR} enctype=#{et} novalidate>
+  <form.margin method=post action=@{DataR $ SitesR} enctype=#{et} novalidate ##{idForm}>
     ^{fw}
-    <nav.right-align.no-space>
+    <nav.right-align>
       <a.button.transparent href=@{DataR $ SitesR}>
         _{MsgCancel}
       <button.primary type=submit>

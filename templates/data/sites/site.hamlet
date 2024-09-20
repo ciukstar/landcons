@@ -1,37 +1,46 @@
 
 <div.overlay ##{idOverlay} data-ui=##{idOverlay} onclick="document.getElementById('#{idDialogDelete}').close()">
 
-^{widgetTopbar (Just $ DataR SitesR) (msgr MsgSite) idOverlay (Just idDialogDelete) (Just $ DataR $ SiteEditR sid) (Just $ SiteHomeR sid)}
+^{widgetTopbar (Just $ DataR SitesR) (msgr MsgSite) idOverlay (Just idDialogDelete) Nothing (Just $ SiteHomeR sid)}
 
 <main.responsive>
 
-  <div>
-    <div.tabs>
-      <a.active href=@{DataR $ SiteR sid}>_{MsgDetails}
-      <a href=@{DataR $ WebpagesR sid}>_{MsgPages}
-      
-    <div.page.padding.active>
+  <div.tabs>
+    <a.active href=@{DataR $ SiteR sid}>_{MsgSettings}
+    <a href=@{DataR $ WebpagesR sid}>_{MsgPages}
 
-      $maybe Entity _ (Site name descr hid) <- site
-        <dl.margin>
-          <dt>
-            <label.large>_{MsgName}
-          <dd.margin>
-            #{name}
+  <div.page.padding.active>
+
+    $maybe Entity sid _ <- site
+
+      <fieldset.row.margin>
+        <legend>_{MsgUrl}
+        <a.link.max.left-align href=@{SiteHomeR sid} target=_blank ##{idSiteUrl}>
+          @{SiteHomeR sid}
+          <button.circle.transparent>
+            <i>open_in_new
             
-          <dt>
-            <label.large>_{MsgUrl}
-          <dd.margin>
-            <a.link href=@{SiteHomeR sid} target=_blank>
-              @{SiteHomeR sid}
+        <button.circle.transparent ##{idButtonCopySiteUrl} title=_{MsgCopy}>
+          <i>content_copy
+   
+      <form.margin method=post action=@{DataR $ SiteR sid} enctype=#{et} novalidate ##{idForm}>
+        ^{fw}
+        <nav.right-align>
+          <a.button.transparent href=@{DataR SitesR}>
+            _{MsgCancel}
+          <button.primary type=submit>
+            _{MsgSave}
+     
+    $nothing
+      <form.margin method=post action=@{DataR SitesR} enctype=#{et} novalidate ##{idForm}>
+        ^{fw}
+        <nav.right-align>
+          <a.button.transparent href=@{DataR SitesR}>
+            _{MsgCancel}
+          <button.primary type=submit>
+            _{MsgCreate}
 
-          <dt>
-            <label.large>_{MsgDescription}
-          <dd.margin>
-            $maybe descr <- descr
-              #{descr}
-
-    ^{widgetSnackbar msgs}
+  ^{widgetSnackbar msgs}
 
 <dialog ##{idDialogDelete}>
   <h5>_{MsgConfirmPlease}

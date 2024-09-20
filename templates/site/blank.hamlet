@@ -1,41 +1,41 @@
 
 
-$maybe (Entity _ (Webpage _ _ footer),(header,body)) <- page
-  $maybe Entity _ (DocHeader _ typ html level) <- header 
-    $case typ
-      $of ContentsTypeHtml
-        $maybe html <- html
-          ^{html}
-      $of ContentsTypeText
-        $maybe l <- level
-          $case l
-            $of HeadingLevelH1
-              <header.responsive>
+$maybe (Entity _ (Webpage _ _ pageColor),(header,body)) <- page
+  $maybe Entity _ (DocHeader _ typ html level lang country color bg) <- header
+    <header.responsive :isJust color:style="color:#{fromMaybe "inherit" color};background-color:#{fromMaybe "inherit" bg}">
+      $maybe Entity _ (Logo hid _ _ _) <- logo
+        <figure>
+          <img src=@{DataR $ HeaderLogoR hid} alt=_{MsgLogo} height=56 width=auto loading=lazy>
+
+      $case typ
+        $of ContentsTypeHtml          
+          $maybe html <- html
+            ^{html}
+
+        $of ContentsTypeText
+          $maybe l <- level
+            $case l
+              $of HeadingLevelH1
                 <h1>
                   $maybe html <- html
                     ^{html}
-            $of HeadingLevelH2
-              <header.responsive>
+              $of HeadingLevelH2
                 <h2>
                   $maybe html <- html
                     ^{html}
-            $of HeadingLevelH3
-              <header.responsive>
+              $of HeadingLevelH3
                 <h3>
                   $maybe html <- html
                     ^{html}
-            $of HeadingLevelH4
-              <header.responsive>
+              $of HeadingLevelH4
                 <h4>
                   $maybe html <- html
                     ^{html}
-            $of HeadingLevelH5
-              <header.responsive>
+              $of HeadingLevelH5
                 <h5>
                   $maybe html <- html
                     ^{html}
-            $of HeadingLevelH6
-              <header.responsive>
+              $of HeadingLevelH6
                 <h6>
                   $maybe html <- html
                     ^{html}
@@ -49,9 +49,12 @@ $maybe (Entity _ (Webpage _ _ footer),(header,body)) <- page
           <img.circle.extra src=@{DataR $ ItemPhotoR iid} alt=_{MsgPhoto}>
 
           <div.max>
-            <h6.small>#{name}
+            <h6.small>
+              #{name}
+              
             <div.currency data-value=#{price} data-currency=#{currency}>
               #{price} #{currency}
+              
             <div>
               $maybe r <- rating
                 #{T.replicate r "☆"}
@@ -61,4 +64,6 @@ $maybe (Entity _ (Webpage _ _ footer),(header,body)) <- page
 
         <hr>
   
-  <p>#{footer}
+  <footer>
+    insert footer here
+  

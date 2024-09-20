@@ -14,15 +14,19 @@ import Model
     ( Role(Role)
     , User (User, userEmail, userPassword, userRole)
     , Site (Site, siteName, siteDescr, siteHome)
-    , Webpage (Webpage, webpageTitle, webpageFooter, webpageSite)
+    , Webpage (Webpage, webpageTitle, webpageBgColor, webpageSite)
     , Item (itemName, itemDescr, itemPrice, itemCurrency, itemRating, itemLink, Item)
     , ItemPhoto (itemPhotoItem, ItemPhoto, itemPhotoMime, itemPhotoPhoto, itemPhotoAttribution)
-    , DocHeader (DocHeader, docHeaderPage, docHeaderContentsType, docHeaderHtml, docHeaderLevel)
+    , DocHeader
+      ( DocHeader, docHeaderPage, docHeaderContentsType, docHeaderContents
+      , docHeaderLevel, docHeaderLang, docHeaderCountry, docHeaderColor, docHeaderBgColor
+      )
     , ContentsType (ContentsTypeText)
     , HeadingLevel (HeadingLevelH1)
     , DocBody (DocBody, docBodyPage, docBodyBgColor, docBodyLayout)
     , DisplayLayout (DisplayLayoutTable)
     , Product (Product, productDisplay, productItem)
+    , Logo (Logo, logoHeader, logoPhoto, logoMime, logoAttribution)
     )
     
 import Text.Hamlet (shamlet)
@@ -106,14 +110,25 @@ fillDemoEn = do
 
     pid11 <- insert $ Webpage { webpageSite = sid1
                               , webpageTitle = "Sales #1"
-                              , webpageFooter = "Footer 1"
+                              , webpageBgColor = Just "#0000ff"
                               }
 
     h111 <- insert $ DocHeader { docHeaderPage = pid11
                                , docHeaderContentsType = ContentsTypeText
-                               , docHeaderHtml = Just "Marketplace #1"
+                               , docHeaderContents = Just "Marketplace #1"
                                , docHeaderLevel = Just HeadingLevelH1
+                               , docHeaderLang = Just "en"
+                               , docHeaderCountry = Just "US"
+                               , docHeaderColor = Just "#ff0000"
+                               , docHeaderBgColor = Just "#FFEA00"
                                }
+
+    liftIO (BS.readFile "demo/local_convenience_store_24dp_013048_FILL0_wght400_GRAD0_opsz24.svg") >>= \bs ->
+        insert_ $ Logo { logoHeader = h111
+                       , logoPhoto = bs
+                       , logoMime = "image/svg+xml"
+                       , logoAttribution = Nothing
+                       }
 
     b111 <- insert $ DocBody { docBodyPage = pid11
                              , docBodyBgColor = Just "white"
@@ -131,7 +146,7 @@ fillDemoEn = do
 
     pid12 <- insert $ Webpage { webpageSite = sid1
                               , webpageTitle = "Sales #2"
-                              , webpageFooter = "Footer 2"
+                              , webpageBgColor = Just "#00ff00"
                               }
     
 

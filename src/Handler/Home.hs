@@ -29,9 +29,10 @@ import Foundation
     ( Handler
     , widgetSnackbar, widgetTopbar
     , Route (DataR, PageR)
-    , DataR (ItemPhotoR)
+    , DataR (ItemPhotoR, HeaderLogoR)
     , AppMessage
       ( MsgAppName, MsgHome, MsgPhoto, MsgNumberOfPages, MsgEmptyPage
+      , MsgLogo
       )
     )
     
@@ -46,8 +47,8 @@ import Model
     , DocHeader (DocHeader)
     , EntityField
       ( SiteName, WebpageTitle, WebpageSite, WebpageId
-      , DocHeaderPage, SiteId, DocBodyPage, ProductItem, ItemId, ProductDisplay, DocFooterPage
-      ), DocBody (DocBody), Product (Product), Item (Item), DocFooter (DocFooter)
+      , DocHeaderPage, SiteId, DocBodyPage, ProductItem, ItemId, ProductDisplay, DocFooterPage, LogoHeader
+      ), DocBody (DocBody), Product (Product), Item (Item), DocFooter (DocFooter), Logo (Logo)
     )
     
 import Settings (widgetFile)
@@ -76,6 +77,10 @@ getPageR _sid pid = do
         where_ $ x ^. WebpageId ==. val pid
         return (x,(h,b))
 
+    logo <- runDB $ selectOne $ do
+        x <- from $ table @Logo
+        where_ $ just (x ^. LogoHeader) ==. val (entityKey <$> ((fst . snd) =<< page))
+        return x
 
     products <- runDB $ select $ do
         x :& i <- from $ table @Product

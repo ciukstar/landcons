@@ -27,11 +27,11 @@ import Foundation
     , widgetSnackbar, widgetTopbar
     , Route (DataR, PageR)
     , DataR
-      ( WebpagesR, WebpageEditR, WebpageR, HeaderR, BodyR, BodyItemsR
+      ( WebpagesR, WebpageR, HeaderR, BodyR, BodyItemsR
       , ItemPhotoR
       )
     , AppMessage
-      ( MsgBody, MsgPage, MsgCancel, MsgSave, MsgDetails, MsgHeader
+      ( MsgBody, MsgPage, MsgCancel, MsgSave, MsgSettings, MsgHeader
       , MsgFooter, MsgBackgroundColor, MsgTable, MsgList, MsgCards
       , MsgLayout, MsgRecordEdited, MsgAddProduct, MsgPhoto, MsgItems
       , MsgYouCanAddSomeFromProductList, MsgNoProductsAssignedYet

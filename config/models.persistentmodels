@@ -12,7 +12,7 @@ ItemPhoto
     mime Text
     photo ByteString
     attribution Html Maybe
-    UniqueStaffPhoto item
+    UniqueItemPhoto item
 
 Item
     name Text
@@ -26,24 +26,48 @@ Item
 DocFooter
     page WebpageId OnDeleteCascade
 
+
 DocBody
     page WebpageId OnDeleteCascade
     bgColor Text Maybe
     layout DisplayLayout Maybe
     UniqueDocBody page
-    
+
+
+Logo
+    header DocHeaderId OnDeleteCascade
+    mime Text
+    photo ByteString
+    attribution Html Maybe
+    UniqueLogo header
+
 
 DocHeader
     page WebpageId OnDeleteCascade
     contentsType ContentsType
-    html Html Maybe
+    contents Html Maybe
     level HeadingLevel Maybe
+    lang Lang Maybe
+    country Text Maybe
+    color Text Maybe
+    bgColor Text Maybe
     UniqueDocHeader page
+    
 
 Webpage
     site SiteId OnDeleteCascade
     title Text
-    footer Text
+    bgColor Text Maybe
+    UniqueWebpage site title
+
+
+Favicon
+    site SiteId OnDeleteCascade
+    mime Text
+    photo ByteString
+    attribution Html Maybe
+    UniqueFavicon site
+
 
 Site
     name Text

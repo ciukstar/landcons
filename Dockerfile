@@ -7,10 +7,11 @@ RUN mkdir -p /opt/landcons \
 
 ARG YESOD_DEMO_LANG=EN
 
-WORKDIR /opt/landcons
+WORKDIR       /opt/landcons
 COPY landcons /opt/landcons
-COPY static /opt/landcons/static
-COPY config /opt/landcons/config
+COPY static   /opt/landcons/static
+COPY config   /opt/landcons/config
+COPY demo     /opt/landcons/demo
 
 ENV YESOD_PORT=8080
 ENV YESOD_DEMO_LANG=${YESOD_DEMO_LANG}

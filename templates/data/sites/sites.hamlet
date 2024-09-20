@@ -4,7 +4,9 @@
 <main.responsive.no-padding>
   $forall Entity sid (Site name _ _) <- sites
     <a.row.padding.surface-container.wave href=@{DataR $ SiteR sid}>
-      <button.circle>
+      <i.extra>
+        <img src=@{DataR $ SiteFaviconR sid} width=auto height=56 loading=lazy alt=_{MsgFavicon}>
+        
       <div.max>
         <h6.small>#{name}
       <i>arrow_forward_ios

@@ -2,10 +2,10 @@
 ^{widgetTopbar Nothing (msgr MsgItems) idOverlay Nothing Nothing Nothing}
 
 <main.responsive.no-padding>
-  $forall Entity iid (Item name descr price currency rating link) <- items
+  $forall Entity iid (Item name _ price currency rating _) <- items
     <a.row.padding.surface-container.wave href=@{DataR $ ItemR iid}>
 
-      <img.circle.extra src=@{DataR $ ItemPhotoR iid} alt=_{MsgPhoto}>
+      <img.circle.extra src=@{DataR $ ItemPhotoR iid} alt=_{MsgPhoto} loading=lazy>
         
       <div.max>
         <h6.small>#{name}

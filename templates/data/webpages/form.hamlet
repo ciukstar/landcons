@@ -1,11 +1,14 @@
 
 #{extra} 
 
-$forall v <- [titleV,footerV]
+$forall v <- [titleV,bgV]
   <div.field.label.border.round :isJust (fvErrors v):.invalid>
 
     ^{fvInput v}
-    <label>#{fvLabel v}
+    <label>
+      #{fvLabel v}
+      $if fvRequired v
+        <sup>*
 
     $maybe err <- fvErrors v
       <span.error>#{err}

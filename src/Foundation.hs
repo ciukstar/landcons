@@ -21,7 +21,7 @@ import qualified Data.List.Safe as LS (head)
 import qualified Data.Text.Encoding as TE
 
 import Database.Esqueleto.Experimental
-    ( selectOne, from, table, where_, val, (^.) )
+    ( selectOne, from, table, where_, val, (^.), Value (unValue) )
 import qualified Database.Esqueleto.Experimental as E ((==.))
 import Database.Persist.Sql (ConnectionPool, runSqlPool)
 
@@ -177,6 +177,15 @@ instance Yesod App where
             -- addStylesheet $ StaticR css_bootstrap_css
                                     -- ^ generated from @Settings/StaticFiles.hs@
             $(widgetFile "default-layout")
+            
+        curr <- getCurrentRoute
+        pageColor <- case curr of
+          Just (PageR _ pid) -> (unValue =<<) <$> runDB ( selectOne $ do
+                  x <- from $ table @Webpage
+                  where_ $ x ^. WebpageId E.==. val pid
+                  return $ x ^. WebpageBgColor )
+          _otherwise -> return Nothing
+          
         withUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
 
     -- The page to be redirected to when authentication is required.
@@ -206,7 +215,8 @@ instance Yesod App where
     isAuthorized (DataR (ItemEditR _)) _ = return Authorized
     isAuthorized (DataR (ItemDeleR _)) _ = return Authorized
     
-
+    
+    isAuthorized (DataR (SiteFaviconR _)) _ = return Authorized
     isAuthorized (DataR SitesR) _ = return Authorized
     isAuthorized (DataR (SiteR _)) _ = return Authorized
     isAuthorized (DataR SiteNewR) _ = return Authorized
@@ -220,7 +230,9 @@ instance Yesod App where
     isAuthorized (DataR (WebpageDeleR _ _)) _ = return Authorized
 
     
+    isAuthorized (DataR (HeaderLogoR _)) _ = return Authorized
     isAuthorized (DataR (HeaderR {})) _ = return Authorized
+    
     isAuthorized (DataR (BodyR {})) _ = return Authorized
     isAuthorized (DataR (BodyItemsR {})) _ = return Authorized
     

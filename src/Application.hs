@@ -63,6 +63,7 @@ import Handler.Sites
     ( getSitesR, postSitesR
     , getSiteR, postSiteR
     , getSiteNewR, getSiteEditR, postSiteDeleR
+    , getSiteFaviconR
     )
 
 import Handler.Webpages
@@ -71,7 +72,7 @@ import Handler.Webpages
   , getWebpageNewR, getWebpageEditR, postWebpageDeleR
   )
 
-import Handler.Header (getHeaderR, postHeaderR)
+import Handler.Header (getHeaderR, postHeaderR, getHeaderLogoR)
 
 import Handler.Body
     ( getBodyR, postBodyR

@@ -103,13 +103,7 @@ postItemR iid = do
         where_ $ x ^. ItemId ==. val iid
         return x
 
-    ((fr,fw),et) <- runFormPost $ formItem item
-    case fr of
-      FormSuccess (r,(fi,attrib)) -> do
-          runDB $ replace iid r
-          addMessageI msgSuccess MsgRecordEdited
-          redirect $ DataR $ ItemR iid
-      
+    ((fr,fw),et) <- runFormPost $ formItem item      
 
     case fr of
       FormSuccess (r,(Just fi,attrib)) -> do
@@ -248,7 +242,7 @@ formItem item extra = do
         { fsLabel = SomeMessage MsgAttribution
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = []
-        } (Just attrib) 
+        } (Just attrib)
 
     
 
