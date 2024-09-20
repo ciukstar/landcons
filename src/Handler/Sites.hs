@@ -16,9 +16,9 @@ import Data.Maybe (isJust)
 import Data.Text.Encoding (encodeUtf8)
 
 import Database.Esqueleto.Experimental
-    ( select, from, table, orderBy, asc, selectOne, where_, val
+    ( SqlExpr, select, from, table, orderBy, asc, selectOne, where_, val
     , (^.), (==.), (=.)
-    , Value (unValue), update, set
+    , Value (unValue), update, set, subSelectCount
     )
 import Database.Persist
     ( Entity (Entity), entityVal, replace, delete, entityKey
@@ -38,7 +38,7 @@ import Foundation
       , MsgDeleteAreYouSure, MsgCancel, MsgDele, MsgSave, MsgRecordAdded
       , MsgRecordEdited, MsgInvalidFormData, MsgRecordDeleted, MsgCopy
       , MsgPages, MsgHomepage, MsgUrl, MsgCreate, MsgSettings, MsgFavicon
-      , MsgAttribution
+      , MsgAttribution, MsgEmpty
       )
     )
 
@@ -75,6 +75,7 @@ import Yesod.Form.Types
     , fvInput, fvLabel, fvErrors, fvRequired, fvId
     )
 import Yesod.Persist.Core (runDB)
+import Data.Bifunctor (Bifunctor(second))
 
 
 postSiteDeleR :: SiteId -> Handler Html
@@ -253,7 +254,8 @@ formSite site extra = do
 
     let r = (,) <$> (Site <$> nameR <*> descrR <*> homeR)
             <*> ((,) <$> faviconR <*> attribR)
-
+            
+    idFaviconContainer <- newIdent
     idLabelPhoto <- newIdent
     idFigurePhoto <- newIdent
     idImgPhoto <- newIdent
@@ -287,10 +289,16 @@ getSiteR sid = do
 getSitesR :: Handler Html
 getSitesR = do
 
-    sites <- runDB $ select $ do
+    sites <- (second unValue <$>) <$> runDB ( select $ do
         x <- from $ table @Site
+
+        let n :: SqlExpr (Value Int)
+            n = subSelectCount $ do
+                p <- from $ table @Webpage
+                where_ $ p ^. WebpageSite ==. x ^. SiteId
+        
         orderBy [asc (x ^. SiteName)]
-        return x
+        return (x,n) )
 
     msgr <- getMessageRender
     msgs <- getMessages

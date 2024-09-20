@@ -32,7 +32,7 @@ import Foundation
       ( MsgItems, MsgItem, MsgName, MsgDescription, MsgConfirmPlease
       , MsgDeleteAreYouSure, MsgCancel, MsgDele, MsgSave, MsgRecordAdded
       , MsgRecordEdited, MsgInvalidFormData, MsgRecordDeleted, MsgPrice
-      , MsgCurrency, MsgRating, MsgAttribution, MsgPhoto, MsgLogo, MsgLink
+      , MsgCurrency, MsgRating, MsgAttribution, MsgPhoto, MsgLink
       )
     )
 
@@ -244,11 +244,10 @@ formItem item extra = do
         , fsAttrs = []
         } (Just attrib)
 
-    
-
     let r = (,) <$> (Item <$> nameR <*> descrR <*> priceR <*> currencyR <*> ratingR <*> linkR)
                 <*> ((,) <$> photoR <*> attribR)
 
+    idPhotoContainer <- newIdent
     idFigurePhoto <- newIdent
     idLabelPhoto <- newIdent
     idImgPhoto <- newIdent

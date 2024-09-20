@@ -13,7 +13,7 @@
 
     $maybe Entity sid _ <- site
 
-      <fieldset.row.margin>
+      <fieldset.row>
         <legend>_{MsgUrl}
         <a.link.max.left-align href=@{SiteHomeR sid} target=_blank ##{idSiteUrl}>
           @{SiteHomeR sid}
@@ -23,7 +23,7 @@
         <button.circle.transparent ##{idButtonCopySiteUrl} title=_{MsgCopy}>
           <i>content_copy
    
-      <form.margin method=post action=@{DataR $ SiteR sid} enctype=#{et} novalidate ##{idForm}>
+      <form method=post action=@{DataR $ SiteR sid} enctype=#{et} novalidate ##{idForm}>
         ^{fw}
         <nav.right-align>
           <a.button.transparent href=@{DataR SitesR}>

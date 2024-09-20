@@ -12,7 +12,7 @@
       <a href=@{DataR $ BodyR sid pid}>_{MsgBody}
       <a href=#>_{MsgFooter}
       
-    <div.page.padding.active>
+    <div.page.active>
 
       $maybe Entity pid _ <- webpage
         <form.margin method=post action=@{DataR $ WebpageR sid pid} enctype=#{et} novalidate>

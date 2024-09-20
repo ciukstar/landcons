@@ -11,7 +11,7 @@
     <a href=#>_{MsgFooter}
 
   <div.page.padding.active>
-    <form method=post action=@{DataR $ HeaderR sid pid} enctype=#{et}>
+    <form method=post action=@{DataR $ HeaderR sid pid} enctype=#{et} ##{idFormHeader}>
       ^{fw}
       <nav.right-align.no-space>
         <a.button.round.transparent href=@{DataR $ WebpageR sid pid} role=button>

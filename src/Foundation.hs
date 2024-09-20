@@ -103,7 +103,7 @@ widgetMainMenuTrigger idOverlay idDialogMainMenu = $(widgetFile "widgets/trigger
 
 widgetMainMenu :: Text -> Text -> Widget
 widgetMainMenu idOverlay idDialogMainMenu = do
-    admin <- liftHandler isAdministrator
+    curr <- getCurrentRoute
     idButtonMainMenuClose <- newIdent
     $(widgetFile "widgets/menu")
 

@@ -1,32 +1,41 @@
 
 #{extra}
-  
-<label for=#{fvId logoV} ##{idLabelPhoto}>
-  <figure.center-align ##{idFigurePhoto}>
-    $maybe Entity hid _ <- header
-      <img src=@{DataR $ HeaderLogoR hid} width=auto height=56 ##{idImgPhoto} loading=lazy alt=_{MsgLogo}>
-    <figcaption>
 
-      $maybe errs <- fvErrors logoV
-        <div.error>
-          #{errs}
+<div ##{idLogoContainer}>
+  <label for=#{fvId logoV} ##{idLabelPhoto}>
+    <figure.center-align ##{idFigurePhoto}>
+      $maybe Entity hid _ <- header
+        <img src=@{DataR $ HeaderLogoR hid} width=auto height=56 ##{idImgPhoto} loading=lazy alt=_{MsgLogo}>
+      $nothing
+        <img src=@{StaticR img_image_24dp_013048_FILL0_wght400_GRAD0_opsz24_svg} width=auto height=56
+             ##{idImgPhoto} loading=lazy alt=_{MsgLogo}>
+        
+      <figcaption>
 
-      <button.border.round.transparent type=button onclick="document.getElementById('#{idLabelPhoto}').click()">
-        <i>upload_file
-        _{MsgLogo}
+        $maybe errs <- fvErrors logoV
+          <div.error>
+            #{errs}
 
-^{fvInput logoV}
+        <button.small.border.round.transparent type=button onclick="document.getElementById('#{idLabelPhoto}').click()">
+          <i>upload_file
+          _{MsgLogo}
 
-<div.field.textarea.label.border.round :isJust (fvErrors attribV):.invalid>
+  ^{fvInput logoV}
 
-  ^{fvInput attribV}
-  <label>
-    #{fvLabel attribV}
-    $if fvRequired attribV
-      <sup>*
+  <details.margin>
+    <summary>
+      #{fvLabel attribV}
 
-  $maybe err <- fvErrors attribV
-    <span.error>#{err}
+    <div.field.textarea.label.border.round :isJust (fvErrors attribV):.invalid>
+
+      ^{fvInput attribV}
+      <label>
+        #{fvLabel attribV}
+        $if fvRequired attribV
+          <sup>*
+
+      $maybe err <- fvErrors attribV
+        <span.error>#{err}
 
 <div.field.label.suffix.border.round :isJust (fvErrors typeV):.invalid>
   ^{fvInput typeV}

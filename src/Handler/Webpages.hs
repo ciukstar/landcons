@@ -13,7 +13,8 @@ import Data.Maybe (isJust)
 
 import Database.Esqueleto.Experimental
     ( select, from, table, orderBy, asc, selectOne, where_, val
-    , (^.), (==.)
+    , (^.), (?.), (==.), (:&)((:&))
+    , leftJoin, on, just
     )
 import Database.Persist
     ( Entity (Entity), entityVal, insert_, replace, delete
@@ -24,14 +25,14 @@ import Foundation
     , Route (DataR, PageR)
     , DataR
       ( WebpagesR, WebpageR, WebpageNewR, WebpageDeleR
-      , SiteR, SitesR, HeaderR, BodyR
+      , SiteR, SitesR, HeaderR, BodyR, HeaderLogoR
       )
     , AppMessage
-      ( MsgPages, MsgPage, MsgConfirmPlease
+      ( MsgPages, MsgPage, MsgConfirmPlease, MsgLogo, MsgEmptyPage
       , MsgDeleteAreYouSure, MsgCancel, MsgDele, MsgSave, MsgRecordAdded
       , MsgRecordEdited, MsgInvalidFormData, MsgRecordDeleted, MsgTitle
-      , MsgHeader, MsgBody, MsgFooter, MsgDetails, MsgSite
-      , MsgCreate, MsgSettings, MsgBackgroundColor
+      , MsgHeader, MsgBody, MsgFooter, MsgSite, MsgNoPagesOnThisSiteYet
+      , MsgCreate, MsgSettings, MsgBackgroundColor, MsgPleaseAddIfNecessary
       )
     )
 
@@ -40,7 +41,11 @@ import Model
     , SiteId
     , WebpageId
     , Webpage (Webpage, webpageTitle, webpageBgColor)
-    , EntityField (WebpageTitle, WebpageId, WebpageSite)
+    , DocHeader, DocBody, DocFooter
+    , EntityField
+      ( WebpageTitle, WebpageId, WebpageSite, DocHeaderPage, DocBodyPage
+      , DocFooterPage
+      )
     )
 
 import Settings (widgetFile)
@@ -187,13 +192,16 @@ getWebpageR sid pid = do
     
 
 getWebpagesR :: SiteId -> Handler Html
-getWebpagesR sid = do
+getWebpagesR sid = do 
 
     webpages <- runDB $ select $ do
-        x <- from $ table @Webpage
+        x :& h :& b :& f <- from $ table @Webpage
+            `leftJoin` table @DocHeader `on` (\(x :& h) -> just (x ^. WebpageId) ==. h ?. DocHeaderPage)
+            `leftJoin` table @DocBody `on` (\(x :& _ :& b) -> just (x ^. WebpageId) ==. b ?. DocBodyPage)
+            `leftJoin` table @DocFooter `on` (\(x :& _ :& _ :& f) -> just (x ^. WebpageId) ==. f ?. DocFooterPage)
         where_ $ x ^. WebpageSite ==. val sid
         orderBy [asc (x ^. WebpageTitle)]
-        return x
+        return (x,(h,(b,f)))
 
     msgr <- getMessageRender
     msgs <- getMessages

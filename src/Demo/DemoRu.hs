@@ -27,6 +27,7 @@ import Model
     , HeadingLevel (HeadingLevelH1)
     , DisplayLayout (DisplayLayoutTable)
     , Logo (Logo, logoHeader, logoPhoto, logoMime, logoAttribution)
+    , Favicon (Favicon, faviconSite, faviconMime, faviconPhoto, faviconAttribution)
     )
     
 import Text.Hamlet (shamlet)
@@ -101,6 +102,13 @@ fillDemoRu = do
                           , siteDescr = Nothing
                           , siteHome = Nothing
                           }
+             
+    liftIO (BS.readFile "demo/favicon_1.ico") >>= \bs ->
+      insert_ Favicon { faviconSite = sid1
+                      , faviconMime = "image/x-icon"
+                      , faviconPhoto = bs
+                      , faviconAttribution = Nothing
+                      }
 
     sid2 <- insert $ Site { siteName = "Сайт №2"
                           , siteDescr = Nothing

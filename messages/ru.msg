@@ -1,3 +1,6 @@
+PleaseAddIfNecessary: Пожалуйста, добавьте, если необходимо
+NoPagesOnThisSiteYet: На этом сайте пока нет страниц
+Empty: Пустой
 Favicon: Фавикон
 Copy: Копировать
 Settings: Настройки

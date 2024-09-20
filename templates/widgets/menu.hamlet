@@ -14,21 +14,21 @@
   <nav.drawer>
 
 
-    <a href=@{DataR SitesR}>
+    <a href=@{DataR SitesR} :curr == Just (DataR SitesR):.active>
       <i>home
       <span>_{MsgSites}
       
-    <a href=@{DataR ItemsR}>
+    <a href=@{DataR ItemsR} :curr == Just (DataR ItemsR):.active>
       <i>category
       <span>_{MsgItems}
 
-    <a href=@{DataR UsersR}>
+    <a href=@{DataR UsersR} :curr == Just (DataR UsersR):.active>
       <i>group
       <span>_{MsgUsers}
       
     <hr>
 
-    <a href=@{DocsR}>
+    <a href=@{DocsR} :curr == Just (DocsR):.active>
       <i>quick_reference
       <span>_{MsgDocumentation}
 

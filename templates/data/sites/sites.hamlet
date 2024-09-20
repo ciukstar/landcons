@@ -2,13 +2,15 @@
 ^{widgetTopbar Nothing (msgr MsgSites) idOverlay Nothing Nothing Nothing}
 
 <main.responsive.no-padding>
-  $forall Entity sid (Site name _ _) <- sites
+  $forall (Entity sid (Site name _ _),npages) <- sites
     <a.row.padding.surface-container.wave href=@{DataR $ SiteR sid}>
-      <i.extra>
+      <i.circle.extra>
         <img src=@{DataR $ SiteFaviconR sid} width=auto height=56 loading=lazy alt=_{MsgFavicon}>
         
       <div.max>
-        <h6.small>#{name}
+        <h5.small>#{name}
+        $if npages == 0
+          <div.lower>_{MsgEmpty}
       <i>arrow_forward_ios
 
     <hr>

@@ -1,3 +1,6 @@
 
-##{idLabelPhoto}
-    display: inline-block
+
+##{idFaviconContainer}
+    text-align: center
+    ##{idLabelPhoto}
+        display: inline-block

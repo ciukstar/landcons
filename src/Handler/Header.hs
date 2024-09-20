@@ -56,12 +56,14 @@ import Model
     , EntityField
       ( DocHeaderContentsType, DocHeaderContents, DocHeaderLevel, DocHeaderLang
       , DocHeaderCountry, DocHeaderColor, DocHeaderBgColor, LogoHeader
-      , LogoAttribution, LogoMime, LogoPhoto
+      , LogoAttribution, LogoMime, LogoPhoto, DocHeaderPage
       )
     )
 
 import Settings.StaticFiles
-    ( img_branding_watermark_24dp_013048_FILL0_wght400_GRAD0_opsz24_svg )
+    ( img_branding_watermark_24dp_013048_FILL0_wght400_GRAD0_opsz24_svg
+    , img_image_24dp_013048_FILL0_wght400_GRAD0_opsz24_svg
+    )
     
 import Text.Hamlet (Html)
 
@@ -132,6 +134,7 @@ postHeaderR sid pid = do
           defaultLayout $ do
               setTitleI MsgHeader
               idOverlay <- newIdent
+              idFormHeader <- newIdent
               idDialogDelete <- newIdent
               $(widgetFile "data/header/header")
 
@@ -139,7 +142,10 @@ postHeaderR sid pid = do
 getHeaderR :: SiteId -> WebpageId -> Handler Html
 getHeaderR sid pid = do
 
-    header <- runDB $ selectOne $ from $ table @DocHeader
+    header <- runDB $ selectOne $ do
+        x <- from $ table @DocHeader
+        where_ $ x ^. DocHeaderPage ==. val pid
+        return x
     
     (fw,et) <- generateFormPost $ formHeader pid header
     
@@ -148,6 +154,7 @@ getHeaderR sid pid = do
     defaultLayout $ do
         setTitleI MsgHeader
         idOverlay <- newIdent
+        idFormHeader <- newIdent
         idDialogDelete <- newIdent
         $(widgetFile "data/header/header")
 
@@ -213,6 +220,7 @@ formHeader pid header extra = do
             ( DocHeader pid <$> typeR <*> htmlR <*> levelR <*> langR <*> countryR <*> colorR <*> bgColorR
             ) <*> ((,) <$> logoR <*> attribR)
 
+    idLogoContainer <- newIdent
     idLabelPhoto <- newIdent
     idFigurePhoto <- newIdent
     idImgPhoto <- newIdent

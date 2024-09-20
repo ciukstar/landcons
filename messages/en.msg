@@ -1,3 +1,6 @@
+PleaseAddIfNecessary: Please add if necessary
+NoPagesOnThisSiteYet: There are no pages on this site yet
+Empty: Empty
 Favicon: Favicon
 Copy: Copy
 Settings: Settings

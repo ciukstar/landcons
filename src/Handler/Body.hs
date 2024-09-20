@@ -49,7 +49,7 @@ import Model
     , DocBodyId, DocBody (DocBody, docBodyBgColor, docBodyLayout)
     , EntityField
       ( DocBodyBgColor, DocBodyLayout, ProductDisplay, ProductItem, ItemId
-      , ItemName
+      , ItemName, DocBodyPage
       )
     )
 
@@ -194,7 +194,10 @@ postBodyR sid pid = do
 getBodyR :: SiteId -> WebpageId -> Handler Html
 getBodyR sid pid = do
 
-    body <- runDB $ selectOne $ from $ table @DocBody
+    body <- runDB $ selectOne $ do
+        x <- from $ table @DocBody
+        where_ $ x ^. DocBodyPage ==. val pid
+        return x
         
     (fw,et) <- generateFormPost $ formBody pid body
 
